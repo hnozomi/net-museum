@@ -1,5 +1,7 @@
 import type { NextPage } from 'next';
 
-export const Home: NextPage = () => {
+const MainPage: NextPage = () => {
   return <div>メインページ</div>;
 };
+
+export default MainPage;
