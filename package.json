@@ -9,7 +9,12 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@chakra-ui/icons": "^2.0.17",
+    "@chakra-ui/react": "^2.4.9",
+    "@emotion/react": "^11.10.5",
+    "@emotion/styled": "^11.10.5",
     "@react-google-maps/api": "^2.17.1",
+    "framer-motion": "^8.5.2",
     "next": "13.1.4",
     "react": "18.2.0",
     "react-dom": "18.2.0"
