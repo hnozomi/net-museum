@@ -1,5 +1,5 @@
 import { Box, Center, Text } from '@chakra-ui/react';
-import { Circle, GoogleMap, InfoWindow } from '@react-google-maps/api';
+import { Circle, GoogleMap, InfoWindow, Marker } from '@react-google-maps/api';
 import { FC } from 'react';
 
 import { useGoogleMapPageHook } from '@/components/page/hooks/useGoogleMapPageHook';
@@ -13,13 +13,13 @@ const containerStyle = {
 const googleMapOptions = {
   center: POSITION.testCenter,
   maxZoom: 17,
-  minZoom: 17,
+  minZoom: 15,
 };
 
 const circleOptions = {
   clickable: false,
   draggable: false,
-  editable: true,
+  editable: false,
   fillColor: '#FF0000',
   fillOpacity: 0.35,
   radius: 70,
@@ -31,8 +31,16 @@ const circleOptions = {
 };
 
 export const GoogleMapContent: FC = () => {
-  const { activeMarker, onLoad, onUnmount, setStationCicle, setSugiCicle } =
-    useGoogleMapPageHook();
+  const {
+    currentPosition,
+    currentoPositionIndex,
+    onClickInfoWindow,
+    onLoad,
+    onUnmount,
+    setHomeCicle,
+    setStationCicle,
+    setSugiCicle,
+  } = useGoogleMapPageHook();
 
   return (
     <GoogleMap
@@ -47,14 +55,20 @@ export const GoogleMapContent: FC = () => {
         onLoad={(circle) => setStationCicle(circle)}
       />
       <Circle
+        center={POSITION.testHome}
+        options={circleOptions}
+        onLoad={(circle) => setHomeCicle(circle)}
+      />
+      <Circle
         center={POSITION.testSugi}
         options={circleOptions}
         onLoad={(circle) => setSugiCicle(circle)}
       />
+      <Marker position={currentPosition} />
       {MARKERS.map(({ id, name, position }) => (
         <InfoWindow key={id} position={position}>
-          {activeMarker === id ? (
-            <Box h="3rem" w="10rem">
+          {currentoPositionIndex === id ? (
+            <Box h="3rem" w="10rem" onClick={onClickInfoWindow}>
               <Center>
                 <Text className="animation-test" fontSize="26px">
                   {name}
