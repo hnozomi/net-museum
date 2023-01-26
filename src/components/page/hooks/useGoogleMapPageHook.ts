@@ -1,7 +1,6 @@
-import { useSafeLayoutEffect } from '@chakra-ui/react';
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
-import { POSITION } from '@/const';
+import { TESTCENTER } from '@/const';
 
 export const useGoogleMapPageHook = () => {
   const [currentPosition, setCurrentPosition] = useState<
@@ -9,66 +8,66 @@ export const useGoogleMapPageHook = () => {
   >({ lat: 0, lng: 0 });
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [currentoPositionIndex, setCurrentoPositionIndex] = useState(0);
+  const [isCurrentPosition, setIsCurrentPositionCheck] = useState(true);
 
-  const [stationCircle, setStationCicle] = useState<
-    google.maps.Circle | undefined
-  >(undefined);
-  const [sugiCircle, setSugiCicle] = useState<google.maps.Circle | undefined>(
-    undefined,
-  );
-  const [homeCircle, setHomeCicle] = useState<google.maps.Circle | undefined>(
-    undefined,
-  );
+  const [circleArray, setCircleArray] = useState<
+    { circle: google.maps.Circle; id: number }[]
+  >([]);
+
+  const mapRef = useRef<google.maps.Map>();
 
   const currentPositionCheck = (
     currentPosition: google.maps.LatLng | google.maps.LatLngLiteral,
   ) => {
-    const stationCircleContain = stationCircle?.getBounds();
-    const sugiCircleContain = sugiCircle?.getBounds();
-    const homeCircleContain = homeCircle?.getBounds();
+    for (const position of circleArray) {
+      const circle = position.circle.getBounds();
+      if (circle?.contains(currentPosition)) {
+        setCurrentoPositionIndex(position.id);
+        return;
+      } else {
+        setCurrentoPositionIndex(0);
+      }
+    }
+  };
 
-    if (stationCircleContain?.contains(currentPosition)) return 1;
-    if (sugiCircleContain?.contains(currentPosition)) return 2;
-    if (homeCircleContain?.contains(currentPosition)) return 3;
-    return 0;
+  const circleOnLoad = (circle: google.maps.Circle, index: number) => {
+    // TODO: 同じ要素は1つのみにする
+    setCircleArray((prevState) => [
+      ...prevState,
+      { circle: circle, id: index },
+    ]);
   };
 
   // 必須らしい
   const onLoad = useCallback((map: google.maps.Map) => {
-    // This is just an example of getting and using the map instance!!! don't just blindly copy!
-    const bounds = new window.google.maps.LatLngBounds(POSITION.testCenter);
+    const bounds = new window.google.maps.LatLngBounds(TESTCENTER);
     map.fitBounds(bounds);
-
-    setMap(map);
+    mapRef.current = map;
   }, []);
 
   const onUnmount = useCallback(() => {
-    setMap(null);
+    mapRef.current = undefined;
   }, []);
 
-  useSafeLayoutEffect(() => {
-    navigator.geolocation.watchPosition((position) => {
-      const { latitude, longitude } = position.coords;
-      setCurrentPosition({ lat: latitude, lng: longitude });
-    });
-    const result = currentPositionCheck(currentPosition);
-    alert(result);
-    setCurrentoPositionIndex(result);
-  }, [navigator]);
+  navigator.geolocation.watchPosition((position) => {
+    const { latitude, longitude } = position.coords;
+    setCurrentPosition({ lat: latitude, lng: longitude });
+    currentPositionCheck({ lat: latitude, lng: longitude });
+    setIsCurrentPositionCheck(true);
+  });
 
   const onClickInfoWindow = (data) => {
     alert(data);
   };
 
   return {
+    circleOnLoad,
     currentPosition,
     currentoPositionIndex,
+    isCurrentPosition,
     onClickInfoWindow,
     onLoad,
     onUnmount,
-    setHomeCicle,
-    setStationCicle,
-    setSugiCicle,
   };
 };
 

@@ -3,7 +3,7 @@ import { Circle, GoogleMap, InfoWindow, Marker } from '@react-google-maps/api';
 import { FC } from 'react';
 
 import { useGoogleMapPageHook } from '@/components/page/hooks/useGoogleMapPageHook';
-import { MARKERS, POSITION } from '@/const';
+import { MARKERS, POSITIONS, TESTCENTER } from '@/const';
 
 const containerStyle = {
   height: '100vh',
@@ -11,7 +11,8 @@ const containerStyle = {
 };
 
 const googleMapOptions = {
-  center: POSITION.testCenter,
+  center: TESTCENTER,
+  clickableIcons: false,
   maxZoom: 17,
   minZoom: 15,
 };
@@ -32,38 +33,30 @@ const circleOptions = {
 
 export const GoogleMapContent: FC = () => {
   const {
+    circleOnLoad,
     currentPosition,
     currentoPositionIndex,
+    isCurrentPosition,
     onClickInfoWindow,
     onLoad,
     onUnmount,
-    setHomeCicle,
-    setStationCicle,
-    setSugiCicle,
   } = useGoogleMapPageHook();
 
-  return (
+  return isCurrentPosition ? (
     <GoogleMap
       mapContainerStyle={containerStyle}
       options={googleMapOptions}
       onLoad={onLoad}
       onUnmount={onUnmount}
     >
-      <Circle
-        center={POSITION.testStation}
-        options={circleOptions}
-        onLoad={(circle) => setStationCicle(circle)}
-      />
-      <Circle
-        center={POSITION.testHome}
-        options={circleOptions}
-        onLoad={(circle) => setHomeCicle(circle)}
-      />
-      <Circle
-        center={POSITION.testSugi}
-        options={circleOptions}
-        onLoad={(circle) => setSugiCicle(circle)}
-      />
+      {POSITIONS.map(({ id, position }) => (
+        <Circle
+          center={position}
+          key={id}
+          options={circleOptions}
+          onLoad={(circle) => circleOnLoad(circle, id)}
+        />
+      ))}
       <Marker position={currentPosition} />
       {MARKERS.map(({ id, name, position }) => (
         <InfoWindow key={id} position={position}>
@@ -83,5 +76,12 @@ export const GoogleMapContent: FC = () => {
         </InfoWindow>
       ))}
     </GoogleMap>
+  ) : (
+    <Box>
+      <Center mt="5rem">
+        <Text>あなたの端末では、現在位置を取得できません。</Text>
+        <Text>位置情報機能をONにしてください</Text>
+      </Center>
+    </Box>
   );
 };
