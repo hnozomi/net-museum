@@ -36,4 +36,4 @@ yarn-error.log*
 
 
 #　テスト中は緯度経度がバレるため無視する
-const/
+src/const/
