@@ -1,24 +1,25 @@
-import { Box, Center, Heading, Image, Stack, Text } from '@chakra-ui/react';
+import '@splidejs/splide/css';
+
+import { Splide, SplideSlide } from '@splidejs/react-splide';
 import { FC } from 'react';
 
+import { ArtPanel } from '@/components/model/ArtPanel';
 import { MeseumPageProps } from '@/components/page/meseum/hooks/useMeseumPageHook';
 
 export const MeseumContent: FC<MeseumPageProps> = ({ artData }) => {
-  console.log(artData);
   return (
-    <Box w="100%">
-      <Center py="2rem">
-        <Stack w="90%">
-          <Heading>{artData?.title}</Heading>
-          <Text fontSize="0.8rem" m="0!important">
-            {artData?.artistDisplayName}
-          </Text>
-          <Text fontSize="0.8rem" m="0!important">
-            {artData?.artistNationality}
-          </Text>
-          <Image boxSize="md" src={artData?.primaryImage} />
-        </Stack>
-      </Center>
-    </Box>
+    <Splide
+      aria-label="私のお気に入りの画像集"
+      options={{
+        autoplay: false, // 自動再生を有効
+        interval: 3000, // 自動再生の間隔を3秒に設定
+      }}
+    >
+      {artData.map((data) => (
+        <SplideSlide key={data.title}>
+          <ArtPanel art={data} />
+        </SplideSlide>
+      ))}
+    </Splide>
   );
 };
