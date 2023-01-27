@@ -1,8 +1,13 @@
+import { useDisclosure } from '@chakra-ui/react';
+import { useRouter } from 'next/router';
 import { useCallback, useRef, useState } from 'react';
 
 import { TESTCENTER } from '@/const';
+import { axiosClient } from '@/libs/axios';
 
 export const useGoogleMapPageHook = () => {
+  const router = useRouter();
+  const { isOpen, onClose, onOpen } = useDisclosure();
   const [currentPosition, setCurrentPosition] = useState<
     google.maps.LatLng | google.maps.LatLngLiteral
   >({ lat: 0, lng: 0 });
@@ -15,6 +20,7 @@ export const useGoogleMapPageHook = () => {
   >([]);
 
   const mapRef = useRef<google.maps.Map>();
+  const currentRef = useRef<google.maps.LatLngLiteral | null>(null);
 
   const currentPositionCheck = (
     currentPosition: google.maps.LatLng | google.maps.LatLngLiteral,
@@ -49,15 +55,28 @@ export const useGoogleMapPageHook = () => {
     mapRef.current = undefined;
   }, []);
 
-  navigator.geolocation.watchPosition((position) => {
+  navigator.geolocation.getCurrentPosition((position) => {
+    console.log('起動しましたgetCurrent');
+    const { latitude, longitude } = position.coords;
+    currentRef.current = { lat: latitude, lng: longitude };
+  });
+
+  const id = navigator.geolocation.watchPosition((position) => {
+    console.log('起動しました');
     const { latitude, longitude } = position.coords;
     setCurrentPosition({ lat: latitude, lng: longitude });
+    currentRef.current = { lat: latitude, lng: longitude };
     currentPositionCheck({ lat: latitude, lng: longitude });
     setIsCurrentPositionCheck(true);
   });
 
-  const onClickInfoWindow = (data) => {
-    alert(data);
+  const onClickInfoWindow = async (data) => {
+    onOpen();
+    // router.push('/meseum');
+    const response = await axiosClient.get(
+      'https://collectionapi.metmuseum.org/public/collection/v1/objects/437174',
+    );
+    console.log(response);
   };
 
   return {
@@ -65,6 +84,7 @@ export const useGoogleMapPageHook = () => {
     currentPosition,
     currentoPositionIndex,
     isCurrentPosition,
+    modal: { isOpen, onClose, onOpen },
     onClickInfoWindow,
     onLoad,
     onUnmount,

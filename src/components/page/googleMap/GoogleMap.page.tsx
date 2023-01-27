@@ -2,7 +2,7 @@ import { useJsApiLoader } from '@react-google-maps/api';
 import { NextPage } from 'next';
 import { memo } from 'react';
 
-import { GoogleMapContent } from '@/components/page/components/GoogleMapContent';
+import { GoogleMapContent } from '@/components/page/googleMap/components/GoogleMapContent';
 
 const GoogleMapPage: NextPage = memo(() => {
   const { isLoaded } = useJsApiLoader({
@@ -10,6 +10,7 @@ const GoogleMapPage: NextPage = memo(() => {
     id: 'google-map-script',
   });
 
+  // ロード完了してからコンポーネント表示
   return isLoaded ? <GoogleMapContent /> : <></>;
 });
 
