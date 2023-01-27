@@ -1,22 +1,15 @@
 import { Box, Center, Text } from '@chakra-ui/react';
-import { Circle, GoogleMap, InfoWindow, Marker } from '@react-google-maps/api';
+import {
+  CircleF,
+  GoogleMap,
+  InfoWindowF,
+  LoadScriptNext,
+  MarkerF,
+} from '@react-google-maps/api';
 import { FC } from 'react';
 
-import { ArtModal } from '@/components/model/ArtModal';
-import { useGoogleMapPageHook } from '@/components/page/googleMap/hooks/useGoogleMapPageHook';
+import { GoogleMapPageProps } from '@/components/page/googleMap/hooks/useGoogleMapPageHook';
 import { MARKERS, POSITIONS, TESTCENTER } from '@/const';
-
-const containerStyle = {
-  height: '100vh',
-  width: '100%',
-};
-
-const googleMapOptions = {
-  center: TESTCENTER,
-  clickableIcons: false,
-  maxZoom: 17,
-  minZoom: 15,
-};
 
 const circleOptions = {
   clickable: false,
@@ -32,20 +25,30 @@ const circleOptions = {
   zIndex: 1,
 };
 
-export const GoogleMapContent: FC = () => {
-  const {
-    circleOnLoad,
-    currentPosition,
-    currentoPositionIndex,
-    isCurrentPosition,
-    modal,
-    onClickInfoWindow,
-    onLoad,
-    onUnmount,
-  } = useGoogleMapPageHook();
+export const GoogleMapContent: FC<GoogleMapPageProps> = ({
+  circleOnLoad,
+  currentPosition,
+  currentPositionIndex,
+  onClickInfoWindow,
+  onLoad,
+  onUnmount,
+}) => {
+  const containerStyle = {
+    height: '100vh',
+    width: '100%',
+  };
 
-  return isCurrentPosition ? (
-    <>
+  const googleMapOptions = {
+    center: TESTCENTER,
+    clickableIcons: false,
+    maxZoom: 17,
+    minZoom: 15,
+  };
+
+  return (
+    <LoadScriptNext
+      googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''}
+    >
       <GoogleMap
         mapContainerStyle={containerStyle}
         options={googleMapOptions}
@@ -53,17 +56,17 @@ export const GoogleMapContent: FC = () => {
         onUnmount={onUnmount}
       >
         {POSITIONS.map(({ id, position }) => (
-          <Circle
+          <CircleF
             center={position}
             key={id}
             options={circleOptions}
             onLoad={(circle) => circleOnLoad(circle, id)}
           />
         ))}
-        <Marker position={currentPosition} />
+        <MarkerF position={currentPosition} />
         {MARKERS.map(({ id, name, position }) => (
-          <InfoWindow key={id} position={position}>
-            {currentoPositionIndex === id ? (
+          <InfoWindowF key={id} position={position}>
+            {currentPositionIndex === id ? (
               <Box h="3rem" w="10rem" onClick={onClickInfoWindow}>
                 <Center>
                   <Text className="animation-test" fontSize="26px">
@@ -76,17 +79,9 @@ export const GoogleMapContent: FC = () => {
                 <Text>{name}</Text>
               </Box>
             )}
-          </InfoWindow>
+          </InfoWindowF>
         ))}
-        <ArtModal {...modal} />
       </GoogleMap>
-    </>
-  ) : (
-    <Box>
-      <Center mt="5rem">
-        <Text>あなたの端末では、現在位置を取得できません。</Text>
-        <Text>位置情報機能をONにしてください</Text>
-      </Center>
-    </Box>
+    </LoadScriptNext>
   );
 };

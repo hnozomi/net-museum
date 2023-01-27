@@ -1,26 +1,21 @@
-import { useDisclosure } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { TESTCENTER } from '@/const';
 import { axiosClient } from '@/libs/axios';
 
 export const useGoogleMapPageHook = () => {
   const router = useRouter();
-  const { isOpen, onClose, onOpen } = useDisclosure();
   const [currentPosition, setCurrentPosition] = useState<
     google.maps.LatLng | google.maps.LatLngLiteral
   >({ lat: 0, lng: 0 });
   const [map, setMap] = useState<google.maps.Map | null>(null);
-  const [currentoPositionIndex, setCurrentoPositionIndex] = useState(0);
-  const [isCurrentPosition, setIsCurrentPositionCheck] = useState(true);
+  const [currentPositionIndex, setCurrentPositionIndex] = useState(0);
+  // const [isCurrentPosition, setIsCurrentPositionCheck] = useState(true);
 
   const [circleArray, setCircleArray] = useState<
     { circle: google.maps.Circle; id: number }[]
   >([]);
-
-  const mapRef = useRef<google.maps.Map>();
-  const currentRef = useRef<google.maps.LatLngLiteral | null>(null);
 
   const currentPositionCheck = (
     currentPosition: google.maps.LatLng | google.maps.LatLngLiteral,
@@ -28,10 +23,10 @@ export const useGoogleMapPageHook = () => {
     for (const position of circleArray) {
       const circle = position.circle.getBounds();
       if (circle?.contains(currentPosition)) {
-        setCurrentoPositionIndex(position.id);
+        setCurrentPositionIndex(position.id);
         return;
       } else {
-        setCurrentoPositionIndex(0);
+        setCurrentPositionIndex(0);
       }
     }
   };
@@ -48,43 +43,44 @@ export const useGoogleMapPageHook = () => {
   const onLoad = useCallback((map: google.maps.Map) => {
     const bounds = new window.google.maps.LatLngBounds(TESTCENTER);
     map.fitBounds(bounds);
-    mapRef.current = map;
+    setMap(map);
   }, []);
 
   const onUnmount = useCallback(() => {
-    mapRef.current = undefined;
+    setMap(null);
   }, []);
 
-  navigator.geolocation.getCurrentPosition((position) => {
-    console.log('起動しましたgetCurrent');
-    const { latitude, longitude } = position.coords;
-    currentRef.current = { lat: latitude, lng: longitude };
-  });
+  useEffect(() => {
+    const options = {
+      timeout: 5000,
+    };
+    const id = navigator.geolocation.watchPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        // ここでidを解除しないと上手く取得できなかった
+        navigator.geolocation.clearWatch(id);
+        setCurrentPosition({ lat: latitude, lng: longitude });
+        currentPositionCheck({ lat: latitude, lng: longitude });
+      },
+      (err) => {
+        console.log(err);
+      },
+      options,
+    );
+  }, []);
 
-  const id = navigator.geolocation.watchPosition((position) => {
-    console.log('起動しました');
-    const { latitude, longitude } = position.coords;
-    setCurrentPosition({ lat: latitude, lng: longitude });
-    currentRef.current = { lat: latitude, lng: longitude };
-    currentPositionCheck({ lat: latitude, lng: longitude });
-    setIsCurrentPositionCheck(true);
-  });
-
-  const onClickInfoWindow = async (data) => {
-    onOpen();
-    // router.push('/meseum');
+  const onClickInfoWindow = async () => {
+    router.push('/meseum');
     const response = await axiosClient.get(
       'https://collectionapi.metmuseum.org/public/collection/v1/objects/437174',
     );
-    console.log(response);
   };
 
   return {
     circleOnLoad,
     currentPosition,
-    currentoPositionIndex,
-    isCurrentPosition,
-    modal: { isOpen, onClose, onOpen },
+    currentPositionIndex,
+    // isCurrentPosition,
     onClickInfoWindow,
     onLoad,
     onUnmount,
