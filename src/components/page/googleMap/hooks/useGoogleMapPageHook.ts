@@ -1,8 +1,7 @@
 import { useRouter } from 'next/router';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { TESTCENTER } from '@/const';
-import { axiosClient } from '@/libs/axios';
 
 export const useGoogleMapPageHook = () => {
   const router = useRouter();
@@ -50,10 +49,22 @@ export const useGoogleMapPageHook = () => {
     setMap(null);
   }, []);
 
-  useEffect(() => {
-    const options = {
-      timeout: 5000,
-    };
+  // useEffect(() => {
+  //   const id = navigator.geolocation.watchPosition(
+  //     (position) => {
+  //       const { latitude, longitude } = position.coords;
+  //       // ここでidを解除しないと上手く取得できなかった
+  //       navigator.geolocation.clearWatch(id);
+  //       setCurrentPosition({ lat: latitude, lng: longitude });
+  //       currentPositionCheck({ lat: latitude, lng: longitude });
+  //     },
+  //     (err) => {
+  //       console.log(err);
+  //     },
+  //   );
+  // }, []);
+
+  const getCurrentPosition = () => {
     const id = navigator.geolocation.watchPosition(
       (position) => {
         const { latitude, longitude } = position.coords;
@@ -65,15 +76,14 @@ export const useGoogleMapPageHook = () => {
       (err) => {
         console.log(err);
       },
-      options,
     );
-  }, []);
+  };
+
+  const intervalId = setInterval(getCurrentPosition, 5000);
 
   const onClickInfoWindow = async () => {
+    clearInterval(intervalId);
     router.push('/meseum');
-    const response = await axiosClient.get(
-      'https://collectionapi.metmuseum.org/public/collection/v1/objects/437174',
-    );
   };
 
   return {
