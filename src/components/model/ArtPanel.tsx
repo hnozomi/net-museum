@@ -9,9 +9,9 @@ type Props = {
 
 export const ArtPanel: FC<Props> = ({ art, ...props }) => {
   return (
-    <Box w="100%" {...props}>
+    <Box {...props}>
       <Center py="2rem">
-        <Stack w="90%">
+        <Stack p="1rem">
           <Heading>{art?.title}</Heading>
           <Text fontSize="0.8rem" m="0!important">
             {art?.artistDisplayName}

@@ -49,21 +49,6 @@ export const useGoogleMapPageHook = () => {
     setMap(null);
   }, []);
 
-  // useEffect(() => {
-  //   const id = navigator.geolocation.watchPosition(
-  //     (position) => {
-  //       const { latitude, longitude } = position.coords;
-  //       // ここでidを解除しないと上手く取得できなかった
-  //       navigator.geolocation.clearWatch(id);
-  //       setCurrentPosition({ lat: latitude, lng: longitude });
-  //       currentPositionCheck({ lat: latitude, lng: longitude });
-  //     },
-  //     (err) => {
-  //       console.log(err);
-  //     },
-  //   );
-  // }, []);
-
   const getCurrentPosition = () => {
     const id = navigator.geolocation.watchPosition(
       (position) => {
