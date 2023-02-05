@@ -9,14 +9,15 @@ import { MeseumPageProps } from '@/components/page/meseum/hooks/useMeseumPageHoo
 export const MeseumContent: FC<MeseumPageProps> = ({ artData }) => {
   return (
     <Splide
-      aria-label="私のお気に入りの画像集"
+      aria-label="アート"
       options={{
         autoplay: false, // 自動再生を有効
         interval: 3000, // 自動再生の間隔を3秒に設定
       }}
     >
-      {artData.map((data) => (
-        <SplideSlide key={data.title}>
+      {artData.map((data, index) => (
+        // <SplideSlide key={data.title}>
+        <SplideSlide key={index}>
           <ArtPanel art={data} />
         </SplideSlide>
       ))}

@@ -1,31 +1,39 @@
+import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
-import { EUROPEANPAINTINGS } from '@/const/europeanPaintings';
+import { All_ART } from '@/const';
 import { axiosClient } from '@/libs/axios';
 import { Art } from '@/types/art-types';
 
 export const useMeseumPageHook = () => {
+  const router = useRouter();
   const [artData, setArtData] = useState<Art[]>([]);
 
   useEffect(() => {
-    const urls = generateUrls();
-    fetchArtData(urls);
+    fetchArtData(generateUrls());
   }, []);
 
-  // const urls = ["https://httpbin.org/status/200", "https://httpbin.org/status/201"];
-  // const [hogeRes, fooRes] = await Promise.all(
-  //   urls.map((url) => axios.get(url));
-  // );
+  const extractCurrentArt = () => {
+    if (!All_ART) return [];
+
+    for (const art of All_ART) {
+      if (art.departmentId === router.query.artId) {
+        return art.arts;
+      }
+    }
+  };
 
   const generateUrls = () => {
     const urls = [];
+
+    const currentArt = extractCurrentArt();
+    if (!currentArt) return [];
+
     for (let i = 0; i < 5; i++) {
-      const randomNumber = Math.floor(
-        Math.random() * EUROPEANPAINTINGS.length + 1,
-      );
+      const randomNumber = Math.floor(Math.random() * currentArt.length);
 
       urls.push(
-        `https://collectionapi.metmuseum.org/public/collection/v1/objects/${EUROPEANPAINTINGS[randomNumber]}`,
+        `https://collectionapi.metmuseum.org/public/collection/v1/objects/${currentArt[randomNumber]}`,
       );
     }
 
@@ -43,6 +51,15 @@ export const useMeseumPageHook = () => {
     );
   };
 
+  // isPublicDomainのオブジェクトを抽出する
+  // const publicDomain = [];
+
+  // artData.forEach((art) => {
+  //   if (art.isPublicDomain) {
+  //     publicDomain.push(art.objectID);
+  //   }
+  // });
+  // console.log(publicDomain);
   return { artData };
 };
 

@@ -1,4 +1,4 @@
-import { Box, Center, Text } from '@chakra-ui/react';
+import { Box, Button } from '@chakra-ui/react';
 import {
   CircleF,
   GoogleMap,
@@ -10,7 +10,7 @@ import { FC } from 'react';
 
 import { GoogleMapPageProps } from '@/components/page/googleMap/hooks/useGoogleMapPageHook';
 import { MARKERS } from '@/const/markers';
-import { POSITIONS, TESTCENTER } from '@/const/position';
+import { POSITIONS } from '@/const/position';
 
 const circleOptions = {
   clickable: false,
@@ -33,17 +33,19 @@ export const GoogleMapContent: FC<GoogleMapPageProps> = ({
   onClickInfoWindow,
   onLoad,
   onUnmount,
+  zoom,
 }) => {
   const containerStyle = {
-    height: '100vh',
+    height: '95vh',
     width: '100%',
   };
 
   const googleMapOptions = {
-    center: TESTCENTER,
+    // center: currentPosition,
     clickableIcons: false,
-    maxZoom: 17,
-    minZoom: 15,
+    gestureHandling: 'greedy',
+    // maxZoom: 25,
+    // minZoom: 4,
   };
 
   return (
@@ -53,6 +55,7 @@ export const GoogleMapContent: FC<GoogleMapPageProps> = ({
       <GoogleMap
         mapContainerStyle={containerStyle}
         options={googleMapOptions}
+        zoom={zoom}
         onLoad={onLoad}
         onUnmount={onUnmount}
       >
@@ -64,20 +67,24 @@ export const GoogleMapContent: FC<GoogleMapPageProps> = ({
             onLoad={(circle) => circleOnLoad(circle, id)}
           />
         ))}
-        <MarkerF position={currentPosition} />
+        <MarkerF
+          icon="/walking-icon.png"
+          position={currentPosition}
+          zIndex={9}
+        />
         {MARKERS.map(({ id, name, position }) => (
           <InfoWindowF key={id} position={position}>
             {currentPositionIndex === id ? (
-              <Box h="3rem" w="10rem" onClick={onClickInfoWindow}>
-                <Center>
-                  <Text className="animation-test" fontSize="26px">
-                    {name}
-                  </Text>
-                </Center>
-              </Box>
+              <Button
+                className="animation-test"
+                fontSize="26px"
+                onClick={() => onClickInfoWindow(currentPositionIndex)}
+              >
+                {name}
+              </Button>
             ) : (
-              <Box onClick={onClickInfoWindow}>
-                <Text>{name}</Text>
+              <Box bgColor="white" fontSize="1rem">
+                {name}
               </Box>
             )}
           </InfoWindowF>

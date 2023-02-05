@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
-import { TESTCENTER } from '@/const';
+import { CURRENTPOSITION, TESTCENTER } from '@/const';
 
 export const useGoogleMapPageHook = () => {
   const router = useRouter();
@@ -9,6 +9,7 @@ export const useGoogleMapPageHook = () => {
     google.maps.LatLng | google.maps.LatLngLiteral
   >({ lat: 0, lng: 0 });
   const [map, setMap] = useState<google.maps.Map | null>(null);
+  const [zoom, setZoom] = useState(14);
   const [currentPositionIndex, setCurrentPositionIndex] = useState(0);
   // const [isCurrentPosition, setIsCurrentPositionCheck] = useState(true);
 
@@ -40,13 +41,20 @@ export const useGoogleMapPageHook = () => {
 
   // 必須らしい
   const onLoad = useCallback((map: google.maps.Map) => {
-    const bounds = new window.google.maps.LatLngBounds(TESTCENTER);
+    const bounds = new window.google.maps.LatLngBounds(CURRENTPOSITION);
     map.fitBounds(bounds);
+    setZoom(17);
     setMap(map);
   }, []);
 
   const onUnmount = useCallback(() => {
     setMap(null);
+  }, []);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setZoom(15);
+    }, 300);
   }, []);
 
   const getCurrentPosition = () => {
@@ -55,20 +63,22 @@ export const useGoogleMapPageHook = () => {
         const { latitude, longitude } = position.coords;
         // ここでidを解除しないと上手く取得できなかった
         navigator.geolocation.clearWatch(id);
-        setCurrentPosition({ lat: latitude, lng: longitude });
+        // setCurrentPosition({ lat: latitude, lng: longitude });
+        setCurrentPosition(TESTCENTER);
         currentPositionCheck({ lat: latitude, lng: longitude });
       },
       (err) => {
         console.log(err);
       },
+      // options,
     );
   };
 
-  const intervalId = setInterval(getCurrentPosition, 5000);
+  const id = setInterval(getCurrentPosition, 5000);
 
-  const onClickInfoWindow = async () => {
-    clearInterval(intervalId);
-    router.push('/meseum');
+  const onClickInfoWindow = async (currentPositionIndex: number) => {
+    clearInterval(id);
+    router.push(`/meseum/${currentPositionIndex}`);
   };
 
   return {
@@ -79,6 +89,7 @@ export const useGoogleMapPageHook = () => {
     onClickInfoWindow,
     onLoad,
     onUnmount,
+    zoom,
   };
 };
 
