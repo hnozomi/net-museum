@@ -4,6 +4,8 @@ type Marker_Type = {
   position: { lat: number; lng: number };
 };
 
+export const CENTER = { lat: 34.70328550537374, lng: 135.49771790112666 };
+
 export const MARKERS: Marker_Type[] = [
   {
     id: 1,

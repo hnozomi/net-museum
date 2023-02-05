@@ -15,8 +15,6 @@ export * from './medievalArt';
 export * from './modernArt';
 export * from './musicalInstruments';
 export * from './photographs';
-export * from './position';
-export * from './position';
 export * from './TheCloisters';
 export * from './theCostumeInstitute';
 export * from './theLibraries';

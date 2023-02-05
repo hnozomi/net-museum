@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useState } from 'react';
 
-import { CURRENTPOSITION, TESTCENTER } from '@/constants';
+import { CENTER } from '@/constants';
 
 export const useGoogleMapPageHook = () => {
   const router = useRouter();
@@ -41,7 +41,7 @@ export const useGoogleMapPageHook = () => {
 
   // 必須らしい
   const onLoad = useCallback((map: google.maps.Map) => {
-    const bounds = new window.google.maps.LatLngBounds(CURRENTPOSITION);
+    const bounds = new window.google.maps.LatLngBounds(CENTER);
     map.fitBounds(bounds);
     setZoom(14);
     setMap(map);
@@ -64,7 +64,7 @@ export const useGoogleMapPageHook = () => {
         // ここでidを解除しないと上手く取得できなかった
         navigator.geolocation.clearWatch(id);
         // setCurrentPosition({ lat: latitude, lng: longitude });
-        setCurrentPosition(TESTCENTER);
+        setCurrentPosition(CENTER);
         currentPositionCheck({ lat: latitude, lng: longitude });
       },
       (err) => {
