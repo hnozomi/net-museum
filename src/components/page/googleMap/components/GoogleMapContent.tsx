@@ -1,7 +1,15 @@
-import { GoogleMap, LoadScriptNext, MarkerF } from '@react-google-maps/api';
+import { Box, Button } from '@chakra-ui/react';
+import {
+  CircleF,
+  GoogleMap,
+  InfoWindowF,
+  LoadScriptNext,
+  MarkerF,
+} from '@react-google-maps/api';
 import { FC } from 'react';
 
 import { GoogleMapPageProps } from '@/components/page/googleMap/hooks/useGoogleMapPageHook';
+import { MARKERS } from '@/constants';
 
 // import { MARKERS } from '../../../../const/markers';
 
@@ -57,7 +65,7 @@ export const GoogleMapContent: FC<GoogleMapPageProps> = ({
           position={currentPosition}
           zIndex={9}
         />
-        {/* {MARKERS.map(({ id, name, position }) => (
+        {MARKERS.map(({ id, name, position }) => (
           <>
             <CircleF
               center={position}
@@ -81,7 +89,7 @@ export const GoogleMapContent: FC<GoogleMapPageProps> = ({
               )}
             </InfoWindowF>
           </>
-        ))} */}
+        ))}
       </GoogleMap>
     </LoadScriptNext>
   );

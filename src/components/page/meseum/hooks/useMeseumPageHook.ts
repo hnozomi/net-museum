@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
-import { All_ART } from '@/const';
+import { All_ART } from '@/constants';
 import { axiosClient } from '@/libs/axios';
 import { Art } from '@/types/art-types';
 
