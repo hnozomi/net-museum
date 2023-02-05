@@ -9,7 +9,8 @@ import {
 import { FC } from 'react';
 
 import { GoogleMapPageProps } from '@/components/page/googleMap/hooks/useGoogleMapPageHook';
-import { MARKERS } from '@/const';
+
+import { MARKERS } from '../../../../const/markers';
 
 const circleOptions = {
   clickable: false,
