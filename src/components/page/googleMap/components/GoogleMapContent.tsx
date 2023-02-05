@@ -10,7 +10,6 @@ import { FC } from 'react';
 
 import { GoogleMapPageProps } from '@/components/page/googleMap/hooks/useGoogleMapPageHook';
 import { MARKERS } from '@/const/markers';
-import { POSITIONS } from '@/const/position';
 
 const circleOptions = {
   clickable: false,
@@ -44,7 +43,7 @@ export const GoogleMapContent: FC<GoogleMapPageProps> = ({
     // center: currentPosition,
     clickableIcons: false,
     gestureHandling: 'greedy',
-    // maxZoom: 25,
+    maxZoom: 18,
     // minZoom: 4,
   };
 
@@ -59,35 +58,35 @@ export const GoogleMapContent: FC<GoogleMapPageProps> = ({
         onLoad={onLoad}
         onUnmount={onUnmount}
       >
-        {POSITIONS.map(({ id, position }) => (
-          <CircleF
-            center={position}
-            key={id}
-            options={circleOptions}
-            onLoad={(circle) => circleOnLoad(circle, id)}
-          />
-        ))}
         <MarkerF
           icon="/walking-icon.png"
           position={currentPosition}
           zIndex={9}
         />
         {MARKERS.map(({ id, name, position }) => (
-          <InfoWindowF key={id} position={position}>
-            {currentPositionIndex === id ? (
-              <Button
-                className="animation-test"
-                fontSize="26px"
-                onClick={() => onClickInfoWindow(currentPositionIndex)}
-              >
-                {name}
-              </Button>
-            ) : (
-              <Box bgColor="white" fontSize="1rem">
-                {name}
-              </Box>
-            )}
-          </InfoWindowF>
+          <>
+            <CircleF
+              center={position}
+              key={id}
+              options={circleOptions}
+              onLoad={(circle) => circleOnLoad(circle, id)}
+            />
+            <InfoWindowF key={id} position={position}>
+              {currentPositionIndex === id ? (
+                <Button
+                  className="animation-test"
+                  fontSize="26px"
+                  onClick={() => onClickInfoWindow(currentPositionIndex)}
+                >
+                  {name}
+                </Button>
+              ) : (
+                <Box bgColor="white" fontSize="1rem">
+                  {name}
+                </Box>
+              )}
+            </InfoWindowF>
+          </>
         ))}
       </GoogleMap>
     </LoadScriptNext>

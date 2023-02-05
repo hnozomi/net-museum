@@ -43,7 +43,7 @@ export const useGoogleMapPageHook = () => {
   const onLoad = useCallback((map: google.maps.Map) => {
     const bounds = new window.google.maps.LatLngBounds(CURRENTPOSITION);
     map.fitBounds(bounds);
-    setZoom(17);
+    setZoom(14);
     setMap(map);
   }, []);
 
@@ -53,8 +53,8 @@ export const useGoogleMapPageHook = () => {
 
   useEffect(() => {
     setTimeout(() => {
-      setZoom(15);
-    }, 300);
+      setZoom(14);
+    }, 200);
   }, []);
 
   const getCurrentPosition = () => {
