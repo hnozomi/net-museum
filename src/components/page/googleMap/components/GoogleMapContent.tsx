@@ -8,10 +8,9 @@ import {
 } from '@react-google-maps/api';
 import { FC } from 'react';
 
+import { ErrorPanel } from '@/components/model/errorPanel';
 import { GoogleMapPageProps } from '@/components/page/googleMap/hooks/useGoogleMapPageHook';
 import { MARKERS } from '@/constants';
-
-// import { MARKERS } from '../../../../const/markers';
 
 const circleOptions = {
   clickable: false,
@@ -28,9 +27,11 @@ const circleOptions = {
 };
 
 export const GoogleMapContent: FC<GoogleMapPageProps> = ({
+  centerMoved,
   circleOnLoad,
   currentPosition,
   currentPositionIndex,
+  geolocationError,
   onClickInfoWindow,
   onLoad,
   onUnmount,
@@ -42,12 +43,15 @@ export const GoogleMapContent: FC<GoogleMapPageProps> = ({
   };
 
   const googleMapOptions = {
-    // center: currentPosition,
+    // center: mapCenter,
     clickableIcons: false,
     gestureHandling: 'greedy',
     maxZoom: 18,
-    // minZoom: 4,
   };
+
+  if (geolocationError) {
+    return <ErrorPanel />;
+  }
 
   return (
     <LoadScriptNext
@@ -57,7 +61,8 @@ export const GoogleMapContent: FC<GoogleMapPageProps> = ({
         mapContainerStyle={containerStyle}
         options={googleMapOptions}
         zoom={zoom}
-        onLoad={onLoad}
+        onDragEnd={centerMoved}
+        onLoad={(map) => onLoad(map, currentPosition)}
         onUnmount={onUnmount}
       >
         <MarkerF
@@ -69,7 +74,7 @@ export const GoogleMapContent: FC<GoogleMapPageProps> = ({
           <>
             <CircleF
               center={position}
-              key={id}
+              key={name}
               options={circleOptions}
               onLoad={(circle) => circleOnLoad(circle, id)}
             />
