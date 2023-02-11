@@ -8,7 +8,7 @@ import {
 } from '@react-google-maps/api';
 import { FC } from 'react';
 
-import { ErrorPanel } from '@/components/model/errorPanel';
+import { GpsErrorPanel } from '@/components/model/GpsErrorPanel';
 import { GoogleMapPageProps } from '@/components/page/googleMap/hooks/useGoogleMapPageHook';
 import { MARKERS } from '@/constants';
 
@@ -50,7 +50,7 @@ export const GoogleMapContent: FC<GoogleMapPageProps> = ({
   };
 
   if (geolocationError) {
-    return <ErrorPanel />;
+    return <GpsErrorPanel />;
   }
 
   return (

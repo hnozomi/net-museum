@@ -1,6 +1,6 @@
 import { Card, CardBody, Center, Text } from '@chakra-ui/react';
 
-export const ErrorPanel = () => {
+export const GpsErrorPanel = () => {
   return (
     <Center>
       <Card bg="red.500" mt="5rem" w="90%">
