@@ -44,7 +44,6 @@ export const useMeseumPageHook = () => {
     await Promise.all(
       urls.map((url) =>
         axiosClient.get<Art>(url).then((res) => {
-          console.log(res.data);
           setArtData((prevState) => [...prevState, res.data]);
         }),
       ),

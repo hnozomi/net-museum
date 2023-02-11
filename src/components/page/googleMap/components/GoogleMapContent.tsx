@@ -88,7 +88,11 @@ export const GoogleMapContent: FC<GoogleMapPageProps> = ({
                   {name}
                 </Button>
               ) : (
-                <Box bgColor="white" fontSize="1rem">
+                <Box
+                  bgColor="white"
+                  fontSize="1rem"
+                  onClick={() => onClickInfoWindow(id)}
+                >
                   {name}
                 </Box>
               )}

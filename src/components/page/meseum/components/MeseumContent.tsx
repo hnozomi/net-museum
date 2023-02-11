@@ -7,6 +7,7 @@ import { ArtPanel } from '@/components/model/ArtPanel';
 import { MeseumPageProps } from '@/components/page/meseum/hooks/useMeseumPageHook';
 
 export const MeseumContent: FC<MeseumPageProps> = ({ artData }) => {
+  console.log(artData);
   return (
     <Splide
       aria-label="アート"
